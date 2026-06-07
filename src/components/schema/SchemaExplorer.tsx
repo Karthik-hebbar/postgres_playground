@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, Database, AlertCircle, Loader2 } from "lucide-react";
+import { RefreshCw, Database, AlertCircle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SchemaTable } from "./SchemaTable";
@@ -10,9 +10,11 @@ import type { SchemaTable as SchemaTableType } from "@/lib/types";
 
 interface SchemaExplorerProps {
   onTableSelect: (sql: string) => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-export function SchemaExplorer({ onTableSelect }: SchemaExplorerProps) {
+export function SchemaExplorer({ onTableSelect, collapsed, onToggleCollapse }: SchemaExplorerProps) {
   const { state, refresh } = useSchema();
 
   const tablesBySchema: Record<string, SchemaTableType[]> = {};
@@ -24,6 +26,22 @@ export function SchemaExplorer({ onTableSelect }: SchemaExplorerProps) {
       }
       tablesBySchema[table.schema].push(table);
     }
+  }
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col h-full border-r border-border bg-sidebar items-center pt-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 shrink-0"
+          onClick={onToggleCollapse}
+          title="Expand schema"
+        >
+          <ChevronRight className="h-3 w-3" />
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -46,6 +64,15 @@ export function SchemaExplorer({ onTableSelect }: SchemaExplorerProps) {
           <RefreshCw
             className={`h-3 w-3 ${state.status === "loading" ? "animate-spin" : ""}`}
           />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 shrink-0"
+          onClick={onToggleCollapse}
+          title="Collapse schema"
+        >
+          <ChevronLeft className="h-3 w-3" />
         </Button>
       </div>
 
